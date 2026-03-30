@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 import uuid
 from agentmesh.cqrs.command import Command
 from agentmesh.cqrs.event import Event
@@ -47,7 +47,7 @@ class BankAccount:
     def create(self, initial_balance: float):
         event = AccountCreated(
             event_id=str(uuid.uuid4()),
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
             account_id=self.account_id,
             initial_balance=initial_balance,
         )
@@ -57,7 +57,7 @@ class BankAccount:
     def credit(self, amount: float):
         event = AccountCredited(
             event_id=str(uuid.uuid4()),
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
             account_id=self.account_id,
             amount=amount,
         )

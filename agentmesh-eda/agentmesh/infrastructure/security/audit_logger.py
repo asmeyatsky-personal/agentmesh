@@ -19,7 +19,7 @@ Architectural Intent:
 import json
 import logging
 from dataclasses import dataclass, asdict, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Optional, Dict, Any, List
 from abc import ABC
@@ -198,7 +198,7 @@ class AuditLogger:
             resource_type=resource_type,
             status=status,
             tenant_id=tenant_id,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             request_id=request_id,
             source_ip=source_ip,
             result_message=result_message,
@@ -206,7 +206,7 @@ class AuditLogger:
             details=resolved_details,
             is_sensitive=is_sensitive,
             data_classification=data_classification,
-            created_at=datetime.utcnow().isoformat()
+            created_at=datetime.now(UTC).isoformat()
         )
 
         # Store audit entry (immutable append)

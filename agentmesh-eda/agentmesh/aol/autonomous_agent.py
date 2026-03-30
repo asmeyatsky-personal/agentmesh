@@ -250,10 +250,12 @@ class AutonomousAgent:
 
         Returns True if healthy, False otherwise.
         Automatically updates aggregate state.
+
+        STUB: Uses random metrics for demo/testing. Replace with real
+        monitoring service integration for production use.
         """
         logger.debug(f"{self.aggregate.agent_id.value}: Running health check")
 
-        # Simulate health check (in real system, would call monitoring service)
         from agentmesh.domain.value_objects.agent_value_objects import HealthMetrics
         import random
 
@@ -352,8 +354,8 @@ class AutonomousAgent:
         """
         Execute single task.
 
-        In real system, this would call actual task implementation.
-        Simulated here with sleep and random success.
+        STUB: Simulates execution with sleep and random success/failure.
+        Override this method or inject a real task executor for production use.
         """
         import time
         import random

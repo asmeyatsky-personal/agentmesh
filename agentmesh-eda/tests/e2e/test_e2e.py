@@ -5,6 +5,7 @@ from agentmesh.mal.message import UniversalMessage
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_e2e_message_flow():
     nc = NATS()
     await nc.connect("nats://localhost:4222")

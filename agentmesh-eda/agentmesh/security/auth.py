@@ -1,11 +1,18 @@
 import os
 from jose import jwt, JWTError
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Optional, Dict, Any
 from loguru import logger
 
-SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "your-secret-key")
+_INSECURE_DEFAULT = "your-secret-key"
+SECRET_KEY = os.environ.get("JWT_SECRET_KEY", _INSECURE_DEFAULT)
 ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
+
+if SECRET_KEY == _INSECURE_DEFAULT:
+    logger.warning(
+        "JWT_SECRET_KEY is not set — using insecure default. "
+        "Set the JWT_SECRET_KEY environment variable before deploying to production."
+    )
 
 
 def create_access_token(
@@ -13,9 +20,9 @@ def create_access_token(
 ) -> str:
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(UTC) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(UTC) + timedelta(minutes=15)
     to_encode.update({"exp": expire, "tenant_id": tenant_id})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

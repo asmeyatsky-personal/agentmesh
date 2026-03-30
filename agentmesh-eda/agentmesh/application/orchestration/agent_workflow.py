@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
 import asyncio
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 
 from agentmesh.application.orchestration.dag_orchestrator import (
     DAGOrchestrator,
@@ -146,7 +146,7 @@ class AgentWorkflowUseCase:
             task_id=dto.task_id,
             agent_id=dto.agent_id,
             status="ASSIGNED" if result.success else "FAILED",
-            assigned_at=datetime.utcnow(),
+            assigned_at=datetime.now(UTC),
             parallel_results=parallel_results,
         )
 

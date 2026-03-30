@@ -18,7 +18,7 @@ Architectural Intent:
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import Enum
 from typing import Optional, Callable, Any, Awaitable
 
@@ -170,7 +170,7 @@ class CircuitBreaker:
     def _on_failure(self):
         """Handle failed call"""
         self.failure_count += 1
-        self.last_failure_time = datetime.utcnow()
+        self.last_failure_time = datetime.now(UTC)
 
         if self.failure_count >= self.failure_threshold:
             self._transition_to(CircuitState.OPEN)
@@ -183,7 +183,7 @@ class CircuitBreaker:
         if self.last_failure_time is None:
             return False
 
-        elapsed = datetime.utcnow() - self.last_failure_time
+        elapsed = datetime.now(UTC) - self.last_failure_time
         timeout = timedelta(seconds=self.recovery_timeout_seconds)
         return elapsed >= timeout
 

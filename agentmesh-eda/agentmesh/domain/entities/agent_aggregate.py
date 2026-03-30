@@ -24,7 +24,7 @@ Domain Language (Ubiquitous Language):
 """
 
 from dataclasses import dataclass, field, replace
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import List, Dict, Optional, Set
 from agentmesh.domain.value_objects.agent_value_objects import (
     AgentId,
@@ -79,7 +79,7 @@ class AgentAggregate:
     tasks_failed: int = 0
 
     # Health Monitoring
-    last_heartbeat: datetime = field(default_factory=datetime.utcnow)
+    last_heartbeat: datetime = field(default_factory=lambda: datetime.now(UTC))
     health_check_timeout_seconds: int = 30
     current_metrics: Optional[HealthMetrics] = None
 
@@ -87,7 +87,7 @@ class AgentAggregate:
     resource_requirements: ResourceRequirement = field(default_factory=lambda: ResourceRequirement())
 
     # Lifecycle
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     activated_at: Optional[datetime] = None
     terminated_at: Optional[datetime] = None
 
@@ -118,7 +118,7 @@ class AgentAggregate:
             raise ValueError("Health check timeout must be positive")
 
         # Validate heartbeat is not in future
-        if self.last_heartbeat > datetime.utcnow():
+        if self.last_heartbeat > datetime.now(UTC):
             raise ValueError("Last heartbeat cannot be in future")
 
         # Validate consistency
@@ -153,7 +153,7 @@ class AgentAggregate:
         2. Current metrics (if available)
         """
         # Check heartbeat
-        age_seconds = (datetime.utcnow() - self.last_heartbeat).total_seconds()
+        age_seconds = (datetime.now(UTC) - self.last_heartbeat).total_seconds()
         if age_seconds > self.health_check_timeout_seconds:
             return False
 
@@ -227,7 +227,7 @@ class AgentAggregate:
 
         return replace(
             self,
-            last_heartbeat=datetime.utcnow(),
+            last_heartbeat=datetime.now(UTC),
             current_metrics=metrics,
             status=new_status
         )
@@ -240,7 +240,7 @@ class AgentAggregate:
         """
         new_metadata = dict(self.metadata)
         new_metadata["unhealthy_reason"] = reason
-        new_metadata["unhealthy_at"] = datetime.utcnow().isoformat()
+        new_metadata["unhealthy_at"] = datetime.now(UTC).isoformat()
 
         return replace(
             self,
@@ -311,7 +311,7 @@ class AgentAggregate:
 
         new_metadata = dict(self.metadata)
         new_metadata["last_error"] = error_message
-        new_metadata["last_error_at"] = datetime.utcnow().isoformat()
+        new_metadata["last_error_at"] = datetime.now(UTC).isoformat()
 
         return replace(
             self,
@@ -357,7 +357,7 @@ class AgentAggregate:
         """
         return replace(
             self,
-            activated_at=datetime.utcnow(),
+            activated_at=datetime.now(UTC),
             status=AgentStatus.AVAILABLE
         )
 
@@ -378,7 +378,7 @@ class AgentAggregate:
         return replace(
             self,
             status=AgentStatus.TERMINATED,
-            terminated_at=datetime.utcnow()
+            terminated_at=datetime.now(UTC)
         )
 
     def add_capability(self, capability: AgentCapability) -> 'AgentAggregate':

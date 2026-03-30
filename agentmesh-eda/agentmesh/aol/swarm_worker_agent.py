@@ -8,7 +8,7 @@ from agentmesh.mal.message import UniversalMessage
 from typing import Dict, List, Any
 import asyncio
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 import json
 
 logger = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ class SwarmWorkerAgent(Agent):
             result_message = UniversalMessage(
                 metadata={
                     "id": f"task_result_{task_id}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "task_result",
                     "task_id": task_id,
                     "original_message_id": message.metadata.get("id")
@@ -146,7 +146,7 @@ class SwarmWorkerAgent(Agent):
             result = {
                 "agent_id": self.id,
                 "task_id": task_id,
-                "completed_at": datetime.utcnow().isoformat(),
+                "completed_at": datetime.now(UTC).isoformat(),
                 "status": "success",
                 "output": f"Task completed by agent {self.id}",
                 "metadata": {
@@ -165,7 +165,7 @@ class SwarmWorkerAgent(Agent):
             return {
                 "agent_id": self.id,
                 "task_id": task_id,
-                "completed_at": datetime.utcnow().isoformat(),
+                "completed_at": datetime.now(UTC).isoformat(),
                 "status": "failed",
                 "error": str(e)
             }
@@ -180,13 +180,13 @@ class SwarmWorkerAgent(Agent):
             "current_tasks": len(self.current_tasks),
             "capabilities": self.capabilities,
             "performance_metrics": self.performance_metrics,
-            "last_heartbeat": datetime.utcnow().isoformat()
+            "last_heartbeat": datetime.now(UTC).isoformat()
         }
         
         return UniversalMessage(
             metadata={
                 "id": f"status_response_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "status_response"
             },
             routing={
@@ -230,7 +230,7 @@ class SwarmWorkerAgent(Agent):
             return UniversalMessage(
                 metadata={
                     "id": f"help_response_{message.metadata.get('id')}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "help_response"
                 },
                 routing={
@@ -251,7 +251,7 @@ class SwarmWorkerAgent(Agent):
             return UniversalMessage(
                 metadata={
                     "id": f"help_response_{message.metadata.get('id')}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "help_response"
                 },
                 routing={
@@ -284,7 +284,7 @@ class SwarmWorkerAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"knowledge_ack_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "knowledge_ack"
             },
             routing={
@@ -323,7 +323,7 @@ class SwarmWorkerAgent(Agent):
             return UniversalMessage(
                 metadata={
                     "id": f"resource_response_{message.metadata.get('id')}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "resource_response"
                 },
                 routing={
@@ -344,7 +344,7 @@ class SwarmWorkerAgent(Agent):
             return UniversalMessage(
                 metadata={
                     "id": f"resource_response_{message.metadata.get('id')}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "resource_response"
                 },
                 routing={
@@ -382,7 +382,7 @@ class SwarmWorkerAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"aggregation_response_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "aggregation_response"
             },
             routing={
@@ -407,7 +407,7 @@ class SwarmWorkerAgent(Agent):
         # based on the agent's local knowledge and task results
         return {
             "agent_id": self.id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "contribution": "Local data and insights from agent"
         }
     
@@ -421,7 +421,7 @@ class SwarmWorkerAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"ack_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "acknowledgment"
             },
             routing={
@@ -446,7 +446,7 @@ class SwarmWorkerAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"task_rejection_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "task_rejection"
             },
             routing={
@@ -472,7 +472,7 @@ class SwarmWorkerAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"task_error_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "task_error"
             },
             routing={
@@ -497,7 +497,7 @@ class SwarmWorkerAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"error_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "error"
             },
             routing={
@@ -549,7 +549,7 @@ class SwarmWorkerAgent(Agent):
         registration_message = UniversalMessage(
             metadata={
                 "id": f"registration_{self.id}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "agent_registration"
             },
             routing={
@@ -584,7 +584,7 @@ class SwarmWorkerAgent(Agent):
         deregistration_message = UniversalMessage(
             metadata={
                 "id": f"deregistration_{self.id}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "agent_deregistration"
             },
             routing={

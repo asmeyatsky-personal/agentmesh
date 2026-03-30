@@ -82,6 +82,7 @@ class AgentMCPServer:
         get_agent_query: Optional[Any] = None,
         list_agents_query: Optional[Any] = None,
     ):
+        self.server_name = "agent-service"
         self._create_agent = create_agent_use_case
         self._get_agent = get_agent_query
         self._list_agents = list_agents_query

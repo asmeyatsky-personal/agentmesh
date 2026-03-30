@@ -9,7 +9,7 @@ from agentmesh.aol.decentralized_coordination import DecentralizedCoordinator, C
 from typing import Dict, List, Any
 import asyncio
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +89,7 @@ class DecentralizedAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"coord_ack_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "coordination_ack"
             },
             routing={
@@ -119,7 +119,7 @@ class DecentralizedAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"decentralized_status_response_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "decentralized_status_response"
             },
             routing={
@@ -144,7 +144,7 @@ class DecentralizedAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"membership_response_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "membership_response"
             },
             routing={
@@ -195,7 +195,7 @@ class DecentralizedAgent(Agent):
             return UniversalMessage(
                 metadata={
                     "id": f"proposal_response_{message.metadata.get('id')}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "proposal_response"
                 },
                 routing={
@@ -251,7 +251,7 @@ class DecentralizedAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"decentralized_ack_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "decentralized_acknowledgment",
                 "coordination_message": True,  # Mark as coordination-related
                 "protocol": CoordinationProtocol.GOSHIPOP.value  # Default protocol
@@ -274,7 +274,7 @@ class DecentralizedAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"decentralized_error_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "decentralized_error"
             },
             routing={
@@ -366,7 +366,7 @@ class DecentralizedAgent(Agent):
             join_message = {
                 "node_id": self.id,
                 "capabilities": self.capabilities,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "action": "join"
             }
             
@@ -391,7 +391,7 @@ class DecentralizedAgent(Agent):
             # Announce departure from cluster
             leave_message = {
                 "node_id": self.id,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "action": "leave"
             }
             

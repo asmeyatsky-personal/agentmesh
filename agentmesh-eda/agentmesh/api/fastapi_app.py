@@ -20,7 +20,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel, Field, validator
 from typing import List, Optional, Dict, Any
-from datetime import datetime
+from datetime import UTC, datetime
 import asyncio
 from contextlib import asynccontextmanager
 from loguru import logger
@@ -183,7 +183,7 @@ async def health_check():
     """Health check endpoint"""
     return HealthResponse(
         status="healthy",
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(UTC),
         version="1.0.0",
         uptime=time.time() - _app_start_time,
     )

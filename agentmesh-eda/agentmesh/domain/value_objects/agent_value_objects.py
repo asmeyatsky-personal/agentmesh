@@ -16,7 +16,8 @@ Key Design Decisions:
 
 from dataclasses import dataclass
 from typing import List, Dict, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
+from enum import Enum
 
 
 @dataclass(frozen=True)
@@ -78,12 +79,12 @@ class AgentCapability:
         return f"{self.name}({levels[self.proficiency_level]})"
 
 
-@dataclass(frozen=True)
-class AgentStatus:
+class AgentStatus(str, Enum):
     """
     Value Object: Agent Status Enumeration
 
     Represents current state of agent in system.
+    Inherits from str so comparisons like status == "AVAILABLE" still work.
     """
     AVAILABLE = "AVAILABLE"
     BUSY = "BUSY"
@@ -91,13 +92,14 @@ class AgentStatus:
     UNHEALTHY = "UNHEALTHY"
     TERMINATED = "TERMINATED"
 
-    # All valid statuses
-    VALID_STATUSES = {AVAILABLE, BUSY, PAUSED, UNHEALTHY, TERMINATED}
-
     @staticmethod
     def validate(status: str) -> bool:
         """Validate status string"""
-        return status in AgentStatus.VALID_STATUSES
+        try:
+            AgentStatus(status)
+            return True
+        except ValueError:
+            return False
 
 
 @dataclass(frozen=True)
@@ -212,7 +214,7 @@ class AgentHeartbeat:
     version: str = "1.0"
 
     def __post_init__(self):
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         if self.timestamp > now:
             raise ValueError("Heartbeat timestamp cannot be in future")
         age_seconds = (now - self.timestamp).total_seconds()
@@ -221,5 +223,5 @@ class AgentHeartbeat:
 
     def is_recent(self, timeout_seconds: int = 30) -> bool:
         """Check if heartbeat is recent enough"""
-        age = (datetime.utcnow() - self.timestamp).total_seconds()
+        age = (datetime.now(UTC) - self.timestamp).total_seconds()
         return age < timeout_seconds

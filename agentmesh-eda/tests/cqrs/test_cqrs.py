@@ -4,7 +4,7 @@ from agentmesh.cqrs.handler import CommandHandler, EventHandler
 from agentmesh.cqrs.event_store import InMemoryEventStore
 from agentmesh.cqrs.bus import CqrsBus
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, UTC
 import uuid
 
 
@@ -46,7 +46,7 @@ class BankAccount:
     def create(self, initial_balance: float):
         event = AccountCreated(
             event_id=str(uuid.uuid4()),
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
             account_id=self.account_id,
             initial_balance=initial_balance,
         )
@@ -56,7 +56,7 @@ class BankAccount:
     def credit(self, amount: float):
         event = AccountCredited(
             event_id=str(uuid.uuid4()),
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
             account_id=self.account_id,
             amount=amount,
         )
@@ -121,7 +121,10 @@ class BankAccountEventHandler(EventHandler):
             self.read_model.accounts[tenant_id][event.account_id] += event.amount
 
 
-def test_cqrs_flow():
+import pytest
+
+@pytest.mark.asyncio
+async def test_cqrs_flow():
     # Setup
     event_store = InMemoryEventStore()
     command_bus = CqrsBus()
@@ -133,19 +136,19 @@ def test_cqrs_flow():
     # Execute commands for tenant 1
     tenant_1_id = "tenant1"
     account_1_id = "123"
-    command_bus.dispatch_command(
+    await command_bus.dispatch_command(
         CreateAccount(
             tenant_id=tenant_1_id, account_id=account_1_id, initial_balance=100.0
         )
     )
-    command_bus.dispatch_command(
+    await command_bus.dispatch_command(
         CreditAccount(tenant_id=tenant_1_id, account_id=account_1_id, amount=50.0)
     )
 
     # Execute commands for tenant 2
     tenant_2_id = "tenant2"
     account_2_id = "456"
-    command_bus.dispatch_command(
+    await command_bus.dispatch_command(
         CreateAccount(
             tenant_id=tenant_2_id, account_id=account_2_id, initial_balance=200.0
         )

@@ -15,7 +15,7 @@ Test Strategy:
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 from agentmesh.domain.entities.agent_aggregate import AgentAggregate
 from agentmesh.domain.value_objects.agent_value_objects import (
@@ -397,7 +397,7 @@ class TestAgentHealth:
 
     def test_agent_becomes_unhealthy_after_timeout(self):
         """Agent is unhealthy if heartbeat timed out"""
-        old_heartbeat = datetime.utcnow() - timedelta(seconds=60)
+        old_heartbeat = datetime.now(UTC) - timedelta(seconds=60)
         agent = AgentAggregate(
             agent_id=AgentId("agent-001"),
             tenant_id="tenant-1",
@@ -416,7 +416,7 @@ class TestAgentHealth:
             tenant_id="tenant-1",
             name="Test Agent",
             capabilities=[AgentCapability("test", 1)],
-            last_heartbeat=datetime.utcnow() - timedelta(seconds=60)
+            last_heartbeat=datetime.now(UTC) - timedelta(seconds=60)
         )
 
         healthy_agent = old_agent.mark_healthy()

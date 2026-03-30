@@ -1,11 +1,16 @@
 from loguru import logger
 from typing import Any, Dict, List
-import numpy as np
 import asyncio
+import math
 import random
 
+try:
+    import numpy as np
+    _NUMPY_AVAILABLE = True
+except ImportError:
+    _NUMPY_AVAILABLE = False
+
 from agentmesh.epe.stream_processor import StreamProcessor
-from agentmesh.mal.adapters.kafka import KafkaAdapter # Using KafkaAdapter as an example
 from agentmesh.mal.message import UniversalMessage
 
 
@@ -26,8 +31,13 @@ class AnomalyDetector:
         """
         is_anomaly = False
         if len(self.data_window) >= self.window_size:
-            mean = np.mean(self.data_window)
-            std_dev = np.std(self.data_window)
+            if _NUMPY_AVAILABLE:
+                mean = np.mean(self.data_window)
+                std_dev = np.std(self.data_window)
+            else:
+                n = len(self.data_window)
+                mean = sum(self.data_window) / n
+                std_dev = math.sqrt(sum((x - mean) ** 2 for x in self.data_window) / n)
             if std_dev == 0: # All data points are the same, use fallback
                 effective_std = max(abs(mean) * 0.1, 1.0)
                 is_anomaly = abs(data_point - mean) > self.std_dev_threshold * effective_std
@@ -78,6 +88,7 @@ async def main():
 
     # --- Setup Kafka Adapter (example) ---
     # In a real scenario, bootstrap_servers would come from configuration
+    from agentmesh.mal.adapters.kafka import KafkaAdapter
     kafka_adapter = KafkaAdapter(bootstrap_servers="localhost:9092")
     
     # --- Setup Stream Processor ---
@@ -93,6 +104,7 @@ async def main():
 
     # --- Simulate sending messages to Kafka (for demonstration) ---
     async def simulate_kafka_producer():
+        from agentmesh.mal.adapters.kafka import KafkaAdapter
         producer_adapter = KafkaAdapter(bootstrap_servers="localhost:9092")
         logger.info("Starting Kafka producer simulation...")
         for i in range(20):
@@ -102,7 +114,7 @@ async def main():
                 logger.warning(f"Simulating anomaly injection: {data_point:.2f}")
 
             message = UniversalMessage(
-                payload={"value": data_point, "timestamp": datetime.utcnow().isoformat()},
+                payload={"value": data_point, "timestamp": datetime.now(UTC).isoformat()},
                 metadata={"type": "sensor_reading", "source": "simulated_sensor"}
             )
             await producer_adapter.send(message, "sensor_data_stream")
@@ -118,5 +130,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    from datetime import datetime # Import datetime here for main function
+    from datetime import UTC, datetime # Import datetime here for main function
     asyncio.run(main())

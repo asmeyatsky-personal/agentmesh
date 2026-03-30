@@ -12,7 +12,7 @@ import asyncio
 import json
 import time
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ class AdvancedPubSubAdapter(MessagePlatformAdapter):
             attributes = {
                 "tenant_id": message.tenant_id,
                 "message_id": message.metadata.get("id", ""),
-                "timestamp": message.metadata.get("timestamp", datetime.utcnow().isoformat()),
+                "timestamp": message.metadata.get("timestamp", datetime.now(UTC).isoformat()),
                 "source": message.routing.get("source", "unknown"),
                 "destination": message.routing.get("destination", target)
             }
@@ -209,7 +209,7 @@ class AdvancedPubSubAdapter(MessagePlatformAdapter):
             error_context = {
                 "original_target": original_target,
                 "error": error,
-                "failed_at": datetime.utcnow().isoformat(),
+                "failed_at": datetime.now(UTC).isoformat(),
                 "retry_count": message.context.get("retry_count", 0) + 1
             }
             

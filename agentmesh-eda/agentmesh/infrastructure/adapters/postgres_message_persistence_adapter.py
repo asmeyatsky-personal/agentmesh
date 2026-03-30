@@ -14,7 +14,7 @@ Key Design Decisions:
 4. Uses SQLAlchemy ORM for type safety and portability
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Optional, List
 from loguru import logger
 from agentmesh.domain.ports.message_persistence_port import (
@@ -83,7 +83,7 @@ class PostgresMessagePersistenceAdapter(MessagePersistencePort):
                 priority=message.metadata.get("priority", "NORMAL"),
                 correlation_id=message.metadata.get("correlation_id"),
                 encrypted_payload=encrypted_payload,
-                persisted_at=datetime.utcnow()
+                persisted_at=datetime.now(UTC)
             )
 
             db.add(db_message)

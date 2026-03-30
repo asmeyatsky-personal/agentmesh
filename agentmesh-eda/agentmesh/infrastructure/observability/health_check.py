@@ -14,7 +14,7 @@ Architectural Intent:
 import asyncio
 import time
 from dataclasses import dataclass, field, asdict
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Dict, Any, List, Optional, Callable
 
@@ -34,7 +34,7 @@ class ComponentHealth:
     response_time_ms: float
     message: str
     details: Dict[str, Any] = field(default_factory=dict)
-    last_checked_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    last_checked_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
@@ -392,7 +392,7 @@ class HealthCheckService:
 
         health = SystemHealth(
             overall_status=overall,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             version=self.version,
             environment=self.environment,
             components=components,

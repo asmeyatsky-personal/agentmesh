@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from typing import TypeVar, Generic, List, Any, Callable, Optional
 import asyncio
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +116,7 @@ class ParallelPipeline(Generic[T_In, T_Out]):
         Each stage processes all items in parallel,
         then passes results to the next stage.
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(UTC)
         current_items = items
         errors: List[dict] = []
 
@@ -151,7 +151,7 @@ class ParallelPipeline(Generic[T_In, T_Out]):
                 logger.warning(f"Stage {stage.name} produced no results")
                 break
 
-        duration_ms = (datetime.utcnow() - start_time).total_seconds() * 1000
+        duration_ms = (datetime.now(UTC) - start_time).total_seconds() * 1000
 
         return PipelineResult(
             items=current_items,

@@ -19,7 +19,7 @@ import time
 from typing import Dict, List, Optional, Callable, Any, Set
 from dataclasses import dataclass, asdict
 from enum import Enum
-from datetime import datetime
+from datetime import UTC, datetime
 import hashlib
 import secrets
 from fastapi import WebSocket, WebSocketDisconnect
@@ -128,7 +128,7 @@ class WebSocketManager:
                 user_id=user_id,
                 tenant_id=tenant_id,
                 api_permissions=api_permissions,
-                connected_at=datetime.utcnow()
+                connected_at=datetime.now(UTC)
             )
             
             self.connections[connection_id] = client
@@ -137,7 +137,7 @@ class WebSocketManager:
             await self._send_to_client(client, {
                 "type": MessageType.CONNECT,
                 "data": {"connection_id": connection_id, "status": "connected"},
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "message_id": self._generate_message_id()
             })
             
@@ -169,7 +169,7 @@ class WebSocketManager:
                     "connection_id": connection_id,
                     "user_id": client.user_id,
                     "reason": "Disconnected",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "message_id": self._generate_message_id()
                 }
             }, connection_id=connection_id)
@@ -223,7 +223,7 @@ class WebSocketManager:
                 
                 ping_message = WebSocketMessage(
                     type=MessageType.PING,
-                    timestamp=datetime.utcnow().isoformat(),
+                    timestamp=datetime.now(UTC).isoformat(),
                     message_id=self._generate_message_id()
                 )
                 
@@ -363,7 +363,7 @@ class WebSocketManager:
         auth_response = WebSocketMessage(
             type=MessageType.AUTH_RESPONSE,
             data={"status": "authenticated", "user_id": user_id, "tenant_id": tenant_id},
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             message_id=self._generate_message_id()
         )
         
@@ -382,7 +382,7 @@ class WebSocketManager:
                 name=channel_name,
                 subscribers=set(),
                 permissions=permissions or [],
-                last_activity=datetime.utcnow()
+                last_activity=datetime.now(UTC)
             )
         
         # Validate permissions
@@ -398,7 +398,7 @@ class WebSocketManager:
             data={
                 "action": "subscribed",
                 "channel": channel_name,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "message_id": self._generate_message_id()
             }
         )
@@ -447,7 +447,7 @@ class WebSocketEndpoint:
                 "agent_id": agent_id,
                 "status": status,
                 "metadata": metadata or {},
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "message_id": self.manager._generate_message_id()
             }
         )
@@ -463,7 +463,7 @@ class WebSocketEndpoint:
                 "status": status,
                 "agent_id": agent_id,
                 "metadata": metadata or {},
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "message_id": self.manager._generate_message_id()
             }
         )
@@ -477,7 +477,7 @@ class WebSocketEndpoint:
             data={
                 "event_type": event_type,
                 "data": data,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "message_id": self.manager._generate_message_id()
             }
         )
@@ -492,7 +492,7 @@ class WebSocketEndpoint:
                 "message": message,
                 "level": level,
                 "target": target,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "message_id": self.manager._generate_message_id()
             }
         )
@@ -511,7 +511,7 @@ class WebSocketEndpoint:
         message = WebSocketMessage(
             type=MessageType.METRICS_UPDATE,
             data=metrics,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "message_id": self.manager._generate_message_id()
             }
         )

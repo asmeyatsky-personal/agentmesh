@@ -199,19 +199,21 @@ class AdvancedMessageRouter:
     
     def _calculate_load_score(self, agent_id: str) -> float:
         """
-        Calculate normalized load score for an agent (0.0 to 1.0, higher means more loaded)
+        Calculate normalized load score for an agent (0.0 to 1.0, higher means more loaded).
+
+        STUB: Estimates load from routing history count. Replace with real
+        metrics (e.g. Prometheus agent_load gauge) for production use.
         """
-        # This would connect to actual load metrics in a real implementation
-        # For now, we'll simulate based on recent routing history
         recent_routes = self._get_recent_routes(agent_id)
-        return min(len(recent_routes) / 10.0, 1.0)  # Normalize assuming max 10 recent routes
+        return min(len(recent_routes) / 10.0, 1.0)
     
     def _calculate_performance_score(self, agent_id: str, message: UniversalMessage) -> float:
         """
-        Calculate historical performance score for an agent on similar messages
+        Calculate historical performance score for an agent on similar messages.
+
+        STUB: Uses in-memory routing history averages. Replace with real
+        performance metrics backend for production use.
         """
-        # This would connect to actual performance metrics in a real implementation
-        # For simulation, we'll return a score based on agent type or historical data
         if agent_id in self.routing_history:
             # Calculate based on success rate or other metrics
             history = self.routing_history[agent_id]
@@ -316,7 +318,5 @@ class LoadBalancer:
             self.agent_load[agent_id] = 0
         self.agent_load[agent_id] += 1
         
-        # Clean up old load data periodically
-        if len(self.agent_load) > 100:  # Arbitrary threshold
-            # Remove agents that haven't been used recently
-            pass  # Implementation would depend on specific requirements
+        # TODO: Implement periodic cleanup of stale load data.
+        # Currently load counters grow unbounded for inactive agents.

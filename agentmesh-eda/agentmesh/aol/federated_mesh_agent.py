@@ -9,7 +9,7 @@ from agentmesh.mal.message import UniversalMessage
 from typing import Dict, List, Any
 import asyncio
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ class FederatedLearningMeshAgent(Agent):
             return UniversalMessage(
                 metadata={
                     "id": f"registration_success_{message.metadata.get('id')}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "federated_registration_success"
                 },
                 routing={
@@ -117,7 +117,7 @@ class FederatedLearningMeshAgent(Agent):
             return UniversalMessage(
                 metadata={
                     "id": f"training_success_{message.metadata.get('id')}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "federated_training_success"
                 },
                 routing={
@@ -158,7 +158,7 @@ class FederatedLearningMeshAgent(Agent):
             return UniversalMessage(
                 metadata={
                     "id": f"sync_success_{message.metadata.get('id')}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "federated_sync_success"
                 },
                 routing={
@@ -194,7 +194,7 @@ class FederatedLearningMeshAgent(Agent):
             return UniversalMessage(
                 metadata={
                     "id": f"metrics_response_{message.metadata.get('id')}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "federated_metrics_response"
                 },
                 routing={
@@ -219,7 +219,7 @@ class FederatedLearningMeshAgent(Agent):
                 return UniversalMessage(
                     metadata={
                         "id": f"metrics_response_{message.metadata.get('id')}",
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                         "type": "federated_metrics_response"
                     },
                     routing={
@@ -267,7 +267,7 @@ class FederatedLearningMeshAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"ack_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "acknowledgment"
             },
             routing={
@@ -288,7 +288,7 @@ class FederatedLearningMeshAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"error_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "error"
             },
             routing={

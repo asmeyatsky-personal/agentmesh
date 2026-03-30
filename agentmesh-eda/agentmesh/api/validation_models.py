@@ -12,7 +12,7 @@ Architectural Intent:
 
 from pydantic import BaseModel, Field, validator, constr, confloat, conint
 from typing import List, Optional, Dict, Any, Literal, Union
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 
 
@@ -30,7 +30,7 @@ class BaseResponse(BaseModel):
     """Base response model with common fields"""
 
     timestamp: datetime = Field(
-        default_factory=datetime.utcnow, description="Response timestamp"
+        default_factory=lambda: datetime.now(UTC), description="Response timestamp"
     )
     api_version: str = Field(default="1.0.0", description="API version")
 
@@ -486,7 +486,7 @@ class ErrorDetail(BaseModel):
         default=None, description="Additional error details"
     )
     timestamp: datetime = Field(
-        default_factory=datetime.utcnow, description="Error timestamp"
+        default_factory=lambda: datetime.now(UTC), description="Error timestamp"
     )
 
 
@@ -501,7 +501,7 @@ class ErrorResponse(BaseResponse):
         default=None, description="Request ID for tracking"
     )
     timestamp: datetime = Field(
-        default_factory=datetime.utcnow, description="Error timestamp"
+        default_factory=lambda: datetime.now(UTC), description="Error timestamp"
     )
     path: Optional[str] = Field(
         default=None, description="Request path that caused the error"

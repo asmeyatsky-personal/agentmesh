@@ -28,7 +28,7 @@ Domain Events:
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Dict, Optional, List
 import uuid
 
@@ -48,7 +48,7 @@ class AgentCreatedEvent:
     agent_type: str
     capabilities: List[str]
     metadata: Dict[str, str] = field(default_factory=dict)
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -73,7 +73,7 @@ class AgentActivatedEvent:
     aggregate_id: str  # agent_id
     tenant_id: str
     activated_at: datetime
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -99,7 +99,7 @@ class AgentCapabilityAddedEvent:
     tenant_id: str
     capability_name: str
     proficiency_level: int
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -126,7 +126,7 @@ class AgentCapabilityUpgradedEvent:
     capability_name: str
     from_level: int
     to_level: int
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -152,7 +152,7 @@ class AgentTaskAssignedEvent:
     tenant_id: str
     task_id: str
     assigned_at: datetime
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -180,7 +180,7 @@ class AgentTaskCompletedEvent:
     completed_at: datetime
     result: Dict = field(default_factory=dict)  # Task result/output
     execution_time_ms: int = 0  # How long task took
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -208,7 +208,7 @@ class AgentTaskFailedEvent:
     failed_at: datetime
     error_message: str
     error_code: str = "UNKNOWN"
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -236,7 +236,7 @@ class AgentStatusChangedEvent:
     to_status: str
     changed_at: datetime
     reason: str = ""
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -265,7 +265,7 @@ class AgentHealthCheckPassedEvent:
     response_time_ms: float
     cpu_usage_percent: float
     memory_usage_percent: float
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -293,7 +293,7 @@ class AgentHealthCheckFailedEvent:
     last_heartbeat: datetime
     timeout_seconds: int
     reason: str = "Heartbeat timeout"
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -319,7 +319,7 @@ class AgentPausedEvent:
     tenant_id: str
     paused_at: datetime
     reason: str = ""
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -344,7 +344,7 @@ class AgentResumedEvent:
     aggregate_id: str  # agent_id
     tenant_id: str
     resumed_at: datetime
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 
@@ -372,7 +372,7 @@ class AgentTerminatedEvent:
     reason: str = ""
     tasks_completed: int = 0
     tasks_failed: int = 0
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
 

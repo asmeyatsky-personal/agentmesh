@@ -13,7 +13,7 @@ import os
 import pytest
 import asyncio
 import logging
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, UTC
 from unittest.mock import AsyncMock, MagicMock
 
 # Set required environment variables before any lazy initialization
@@ -24,14 +24,6 @@ from agentmesh.security.auth import create_access_token
 
 
 # ===== PYTEST CONFIGURATION =====
-
-@pytest.fixture(scope="session")
-def event_loop():
-    """Create event loop for async tests"""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
 
 # ===== AUTHENTICATION FIXTURES =====
 
@@ -157,7 +149,7 @@ async def in_memory_message_broker():
             self.subscriptions = {}
 
         async def publish(self, message, topic: str = None):
-            self.messages.append({"message": message, "topic": topic, "published_at": datetime.utcnow()})
+            self.messages.append({"message": message, "topic": topic, "published_at": datetime.now(UTC)})
             return f"delivery-{len(self.messages)}"
 
         async def subscribe(self, topic: str, callback):

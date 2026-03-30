@@ -10,7 +10,7 @@ from typing import Dict, List, Any, Optional
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ class SwarmTask:
     required_capabilities: List[str]
     assigned_agents: List[str] = field(default_factory=list)
     status: SwarmTaskStatus = SwarmTaskStatus.PENDING
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     completed_at: Optional[datetime] = None
     results: Dict[str, Any] = field(default_factory=dict)
     dependencies: List[str] = field(default_factory=list)
@@ -50,7 +50,7 @@ class SwarmAgentState:
     capabilities: List[str]
     load: float = 0.0
     performance_score: float = 0.8
-    last_seen: datetime = field(default_factory=datetime.utcnow)
+    last_seen: datetime = field(default_factory=lambda: datetime.now(UTC))
     tasks_completed: int = 0
 
 class SwarmOrchestrator(Agent):
@@ -164,7 +164,7 @@ class SwarmOrchestrator(Agent):
             task_message = UniversalMessage(
                 metadata={
                     "id": f"task_assignment_{task.id}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "type": "task_assignment",
                     "task_id": task.id
                 },
@@ -218,7 +218,7 @@ class SwarmOrchestrator(Agent):
             
             if len(completed_agents) >= len(task.assigned_agents):
                 task.status = SwarmTaskStatus.COMPLETED
-                task.completed_at = datetime.utcnow()
+                task.completed_at = datetime.now(UTC)
                 self.swarm_metrics["completed_tasks"] += 1
                 
                 # Update agent performance
@@ -230,7 +230,7 @@ class SwarmOrchestrator(Agent):
                 completion_message = UniversalMessage(
                     metadata={
                         "id": f"task_completion_{task_id}",
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                         "type": "task_completion"
                     },
                     routing={

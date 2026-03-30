@@ -9,7 +9,7 @@ from agentmesh.gol.safety_alignment import SafetyOrchestrator, get_safety_orches
 from typing import Dict, List, Any
 import asyncio
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class SafetyAwareAgent(Agent):
             self._record_behavior({
                 "type": "message_received",
                 "content": message.payload,
-                "timestamp": datetime.utcnow()
+                "timestamp": datetime.now(UTC)
             })
             
             # Process the message based on its type
@@ -69,7 +69,7 @@ class SafetyAwareAgent(Agent):
                 self._record_behavior({
                     "type": "message_processed",
                     "result": result.payload if result else "no_result",
-                    "timestamp": datetime.utcnow()
+                    "timestamp": datetime.now(UTC)
                 })
                 
                 return result
@@ -99,7 +99,7 @@ class SafetyAwareAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"safety_rejection_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "safety_rejection"
             },
             routing={
@@ -127,7 +127,7 @@ class SafetyAwareAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"safety_status_response_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "safety_status_response"
             },
             routing={
@@ -161,7 +161,7 @@ class SafetyAwareAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"alignment_response_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "alignment_response"
             },
             routing={
@@ -213,7 +213,7 @@ class SafetyAwareAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"safe_ack_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "safe_acknowledgment"
             },
             routing={
@@ -271,7 +271,7 @@ class SafetyAwareAgent(Agent):
         return UniversalMessage(
             metadata={
                 "id": f"error_{message.metadata.get('id')}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "type": "error"
             },
             routing={

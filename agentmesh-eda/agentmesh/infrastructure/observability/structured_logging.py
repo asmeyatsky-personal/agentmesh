@@ -14,20 +14,25 @@ Architectural Intent:
 import logging
 import json
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Optional, Dict, Any
 from dataclasses import dataclass, asdict
 
-from opentelemetry import trace, metrics
-from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.exporter.prometheus import PrometheusMetricReader
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
-from opentelemetry.instrumentation.redis import RedisInstrumentor
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
+try:
+    from opentelemetry import trace, metrics
+    from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
+    from opentelemetry.sdk.metrics import MeterProvider
+    from opentelemetry.exporter.prometheus import PrometheusMetricReader
+    from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+    from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+    from opentelemetry.instrumentation.redis import RedisInstrumentor
+    from opentelemetry.instrumentation.requests import RequestsInstrumentor
+    _OTEL_AVAILABLE = True
+except ImportError:
+    _OTEL_AVAILABLE = False
+    trace = None
 
 
 @dataclass(frozen=True)
@@ -64,16 +69,22 @@ class JsonFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Format log record as JSON"""
-        span = trace.get_current_span()
-        span_context = span.get_span_context()
+        trace_id = "0" * 32
+        span_id = "0" * 16
+
+        if _OTEL_AVAILABLE and trace is not None:
+            span = trace.get_current_span()
+            span_context = span.get_span_context()
+            trace_id = format(span_context.trace_id, '032x')
+            span_id = format(span_context.span_id, '016x')
 
         context = LogContext(
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             level=record.levelname,
             logger=record.name,
             message=record.getMessage(),
-            trace_id=format(span_context.trace_id, '032x'),
-            span_id=format(span_context.span_id, '016x'),
+            trace_id=trace_id,
+            span_id=span_id,
             service_name=self.service_name,
             duration_ms=record.msecs if hasattr(record, 'msecs') else None,
             error=str(record.exc_info) if record.exc_info else None,
@@ -113,8 +124,13 @@ class StructuredLogger:
         self.logger = logging.getLogger(service_name)
         self.logger.setLevel(getattr(logging, log_level.upper()))
 
-        # Setup OpenTelemetry tracing
-        self._setup_tracing(jaeger_agent_host, jaeger_agent_port)
+        # Setup OpenTelemetry tracing (if available)
+        if _OTEL_AVAILABLE:
+            self._setup_tracing(jaeger_agent_host, jaeger_agent_port)
+        else:
+            logging.getLogger(__name__).info(
+                "OpenTelemetry not available — structured logging will work without tracing"
+            )
 
         # Setup JSON formatter
         handler = logging.StreamHandler(sys.stdout)

@@ -7,7 +7,7 @@ import asyncio
 import logging
 import numpy as np
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 import json
 import base64
 from cryptography.fernet import Fernet
@@ -24,7 +24,7 @@ class ModelUpdate:
     agent_id: str
     model_id: str
     update_data: bytes  # Serialized model weights/parameters
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     accuracy: float = 0.0
     data_size: int = 0  # Size of training data used
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -36,7 +36,7 @@ class FederatedModel:
     model_type: str
     global_weights: bytes = b""
     agents: List[str] = field(default_factory=list)
-    creation_time: datetime = field(default_factory=datetime.utcnow)
+    creation_time: datetime = field(default_factory=lambda: datetime.now(UTC))
     current_round: int = 0
     total_updates: int = 0
     accuracy_history: List[float] = field(default_factory=list)
@@ -305,7 +305,7 @@ class FederatedLearningAgent:
                 "agent_id": self.agent_id,
                 "training_round": self._get_current_round(model_id),
                 "local_updates": f"simulated_update_epoch_{epochs}",
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(UTC).isoformat()
             }
             
             update_bytes = pickle.dumps(simulated_update)

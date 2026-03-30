@@ -23,7 +23,7 @@ from typing import Any, Callable, Dict, List, Optional, Set
 from enum import Enum
 import asyncio
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 
 logger = logging.getLogger(__name__)
 
@@ -209,7 +209,7 @@ class DAGOrchestrator:
         result = StepResult(
             step_name=step.name,
             status=StepStatus.RUNNING,
-            started_at=datetime.utcnow(),
+            started_at=datetime.now(UTC),
         )
 
         for attempt in range(step.retry_count + 1):
@@ -241,7 +241,7 @@ class DAGOrchestrator:
                 else:
                     logger.info(f"Retrying step {step.name}, attempt {attempt + 2}")
 
-        result.completed_at = datetime.utcnow()
+        result.completed_at = datetime.now(UTC)
         if result.started_at and result.completed_at:
             result.duration_ms = (
                 result.completed_at - result.started_at
@@ -265,7 +265,7 @@ class DAGOrchestrator:
         result = OrchestrationResult(
             workflow_name=self._workflow_name,
             status=StepStatus.PENDING,
-            started_at=datetime.utcnow(),
+            started_at=datetime.now(UTC),
             context=initial_context,
         )
 
@@ -320,7 +320,7 @@ class DAGOrchestrator:
         result.status = (
             StepStatus.COMPLETED if not failed_critical else StepStatus.FAILED
         )
-        result.completed_at = datetime.utcnow()
+        result.completed_at = datetime.now(UTC)
 
         if result.started_at and result.completed_at:
             result.duration_ms = (

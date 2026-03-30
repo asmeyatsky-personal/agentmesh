@@ -6,7 +6,7 @@ from typing import Dict, List, Any, Optional, Callable
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 import re
 from enum import Enum
 import hashlib
@@ -36,8 +36,8 @@ class SafetyPolicy:
     description: str
     rules: List[Dict[str, Any]]
     enabled: bool = True
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    last_updated: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_updated: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 @dataclass
 class SafetyViolation:
@@ -48,7 +48,7 @@ class SafetyViolation:
     violation_type: str
     severity: str  # low, medium, high, critical
     details: Dict[str, Any]
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     resolved: bool = False
 
 class SafetyMonitor:
@@ -372,7 +372,7 @@ class AlignmentEvaluator:
         # Update agent's alignment score
         self.alignment_scores[agent_id] = {
             "score": alignment_score,
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(UTC),
             "details": dict(zip(target_behaviors, scores))
         }
         
@@ -381,7 +381,7 @@ class AlignmentEvaluator:
             self.alignment_history[agent_id] = []
         self.alignment_history[agent_id].append({
             "score": alignment_score,
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(UTC),
             "details": dict(zip(target_behaviors, scores))
         })
         
@@ -399,7 +399,7 @@ class AlignmentEvaluator:
             "status": status.value,
             "target_behaviors": target_behaviors,
             "behavior_scores": dict(zip(target_behaviors, scores)),
-            "timestamp": datetime.utcnow()
+            "timestamp": datetime.now(UTC)
         }
     
     def _calculate_behavior_alignment(self, agent_behaviors: List[Dict[str, Any]], 
@@ -562,7 +562,7 @@ class SafetyOrchestrator:
         Run a comprehensive safety audit
         """
         audit_results = {
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(UTC),
             "agents_audited": len(self.active_agents),
             "total_violations": len(self.safety_monitor.violations),
             "active_quarantined_agents": len(self.safety_quarantine | self.alignment_quarantine),

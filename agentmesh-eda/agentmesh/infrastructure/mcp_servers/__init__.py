@@ -17,6 +17,9 @@ Parallelization Notes:
 - Multiple tool calls can be processed concurrently via the MCP protocol
 """
 
-from agentmesh.infrastructure.mcp_servers.agent_server import AgentMCPServer
-
-__all__ = ["AgentMCPServer"]
+try:
+    from agentmesh.infrastructure.mcp_servers.agent_server import AgentMCPServer
+    __all__ = ["AgentMCPServer"]
+except ImportError:
+    AgentMCPServer = None
+    __all__ = []

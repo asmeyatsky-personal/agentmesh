@@ -103,7 +103,7 @@ class TestCQRSIntegration:
         command = CreateTestCommand("test-entity", "tenant-1")
 
         # Dispatch command
-        command_bus.dispatch_command(command)
+        await command_bus.dispatch_command(command)
 
         # Verify command was handled
         assert len(command_handler.handled_commands) == 1
@@ -121,7 +121,7 @@ class TestCQRSIntegration:
 
         # First create entity via command
         command = CreateTestCommand("query-test", "tenant-1")
-        command_bus.dispatch_command(command)
+        await command_bus.dispatch_command(command)
 
         # Then query for it
         query = GetTestQuery("query-test", "tenant-1")
@@ -144,7 +144,7 @@ class TestCQRSIntegration:
         commands = [CreateTestCommand(f"entity-{i}", "tenant-1") for i in range(3)]
 
         for command in commands:
-            command_bus.dispatch_command(command)
+            await command_bus.dispatch_command(command)
 
         # Verify all commands handled
         assert len(command_handler.handled_commands) == 3
@@ -164,7 +164,7 @@ class TestCQRSIntegration:
 
         # Create entity
         command = CreateTestCommand("consistency-test", "tenant-1")
-        command_bus.dispatch_command(command)
+        await command_bus.dispatch_command(command)
 
         # Query immediately (should see the entity)
         query = GetTestQuery("consistency-test", "tenant-1")
@@ -185,8 +185,8 @@ class TestCQRSIntegration:
         command1 = CreateTestCommand("shared-name", "tenant-1")
         command2 = CreateTestCommand("shared-name", "tenant-2")
 
-        command_bus.dispatch_command(command1)
-        command_bus.dispatch_command(command2)
+        await command_bus.dispatch_command(command1)
+        await command_bus.dispatch_command(command2)
 
         # Query tenant 1
         query1 = GetTestQuery("shared-name", "tenant-1")

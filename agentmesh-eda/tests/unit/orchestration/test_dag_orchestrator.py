@@ -157,7 +157,7 @@ class TestDAGOrchestrator:
             [
                 WorkflowStep("a", step_a),
                 WorkflowStep("b", step_b, is_critical=False),
-                WorkflowStep("c", step_b, depends_on=["a"]),
+                WorkflowStep("c", step_c, depends_on=["a"]),
             ]
         )
 

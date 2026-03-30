@@ -1,5 +1,4 @@
 from agentmesh.epe.anomaly_detection import AnomalyDetector
-import numpy as np
 
 
 def test_anomaly_detector_init():

@@ -6,7 +6,7 @@ from typing import Dict, List, Any, Optional, Set, Tuple
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 import hashlib
 import json
 from enum import Enum
@@ -31,7 +31,7 @@ class CoordinationMessage:
     sender_id: str
     message_type: str  # request, response, proposal, accept, commit, etc.
     content: Dict[str, Any]
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     signatures: List[Dict[str, str]] = field(default_factory=list)  # For multi-signature protocols
     protocol: str = CoordinationProtocol.GOSHIPOP.value
 
@@ -40,7 +40,7 @@ class NodeState:
     """State of a node in the decentralized system"""
     node_id: str
     status: str = "active"  # active, inactive, suspect, failed
-    last_heartbeat: datetime = field(default_factory=datetime.utcnow)
+    last_heartbeat: datetime = field(default_factory=lambda: datetime.now(UTC))
     role: str = "follower"  # leader, follower, candidate (for consensus protocols)
     term: int = 0
     committed_log_index: int = 0
@@ -99,7 +99,7 @@ class GossipProtocol:
                 message_type="gossip",
                 content={
                     "data_store": self.data_store,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "node_status": "active"
                 },
                 protocol=CoordinationProtocol.GOSHIPOP.value
@@ -299,7 +299,7 @@ class RaftProtocol:
                 self.voted_for = None
             
             # Update leader info
-            self.state.last_heartbeat = datetime.utcnow()
+            self.state.last_heartbeat = datetime.now(UTC)
             
             return {"success": True, "term": self.current_term}
             
@@ -421,7 +421,7 @@ class DecentralizedCoordinator:
     def _is_node_active(self, state: NodeState) -> bool:
         """Check if a node is considered active"""
         # Consider node active if heartbeat was received in last 30 seconds
-        time_diff = datetime.utcnow() - state.last_heartbeat
+        time_diff = datetime.now(UTC) - state.last_heartbeat
         return time_diff < timedelta(seconds=30)
     
     def _get_leader(self) -> Optional[str]:

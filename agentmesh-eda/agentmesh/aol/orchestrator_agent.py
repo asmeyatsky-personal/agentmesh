@@ -5,7 +5,7 @@ from agentmesh.mal.router import MessageRouter
 from agentmesh.cqrs.event import TaskAssigned
 from agentmesh.mal.adapters.base import MessagePlatformAdapter
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 
 class OrchestratorAgent(SimpleAgent):
@@ -20,7 +20,7 @@ class OrchestratorAgent(SimpleAgent):
         task_id = str(uuid.uuid4())
         task_assigned_event = TaskAssigned(
             event_id=str(uuid.uuid4()),
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
             task_id=task_id,
             agent_id=agent_id,
             task_details=task_details,
